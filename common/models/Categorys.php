@@ -19,6 +19,7 @@ class Categorys extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
+    public $data;
     public static function tableName()
     {
         return 'categorys';
@@ -30,8 +31,10 @@ class Categorys extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'parent_id', 'created_at', 'updated_at', 'created_by'], 'required'],
+            [['parent_id'], 'required'],
+            [['name','created_by'], 'required','message'=>'Tên không được để trống'],
             [['parent_id', 'created_by'], 'integer'],
+            [['created_at', 'updated_at'], 'date','format'=>'php:Y-m-d'],
             [['created_at', 'updated_at'], 'safe'],
             [['name'], 'string', 'max' => 100],
         ];
@@ -50,5 +53,16 @@ class Categorys extends \yii\db\ActiveRecord
             'updated_at' => 'Updated At',
             'created_by' => 'Created By',
         ];
+    }
+    public function getAllCate($parent=0,$level="--|"){
+        $data_cate=Categorys::find()->asArray()->where('parent_id=:parent',['parent'=>$parent])->all();
+        foreach ($data_cate as $value){
+            if($value['parent_id']==0){
+                $level="--|";
+            }
+            $this->data[$value['id']]=$level.$value['name'];
+            self::getAllCate($value['id'],$level."--|");
+        }
+        return $this->data;
     }
 }
