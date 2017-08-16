@@ -2,12 +2,15 @@
 
 namespace backend\controllers;
 
+use common\models\Categorys;
+use common\models\ImageUpload;
 use Yii;
 use common\models\Article;
 use common\models\ArticleSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
 
 /**
  * ArticleController implements the CRUD actions for Article model.
@@ -64,12 +67,22 @@ class ArticleController extends Controller
     public function actionCreate()
     {
         $model = new Article();
+        $model_category=new Categorys();
+        $data_cate=$model_category->getAllCate(0);
+        if(empty($data_cate)){
+            $data_cate=[];
+        }
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            $model->user_id=Yii::$app->user->identity->id ;
+            $model->created_by=Yii::$app->user->identity->id ;
+            $model->created_at=date('Y-m-d');
+            $model->save();
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
                 'model' => $model,
+                'data_cate'=>$data_cate
             ]);
         }
     }
@@ -83,12 +96,19 @@ class ArticleController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        $model_category=new Categorys();
+        $data_cate=$model_category->getAllCate(0);
+        if(empty($data_cate)){
+            $data_cate=[];
+        }
+        if ($model->load(Yii::$app->request->post()) ) {
+            $model->updated_at=date('Y-m-d');
+            $model->save();
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
+                'data_cate'=>$data_cate
             ]);
         }
     }
@@ -120,5 +140,16 @@ class ArticleController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+    public function actionSetImage($id){
+        $model=new ImageUpload();
+        if(Yii::$app->request->isPost){
+            $article=$this->findModel($id);
+            $file=UploadedFile::getInstance($model,'image');
+            if($article->saveImage($model->uploadFile($file,$article->image))){
+                return $this->redirect(["view",'id'=>$article->id]);
+            }
+        }
+        return $this->render('image',['model'=>$model]);
     }
 }

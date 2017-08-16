@@ -10,32 +10,24 @@ use yii\widgets\ActiveForm;
 
 <div class="article-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+ <div class="row">
+     <div class="col-md-6">
+         <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
+         <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
+         <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'content')->textarea(['rows' => 6]) ?>
+         <?= $form->field($model, 'content')->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'image')->textInput(['maxlength' => true]) ?>
+         <?= $form->field($model, 'cate_id')->dropDownList($data_cate,['pormpt'=>'Chọn danh mục cha']) ?>
 
-    <?= $form->field($model, 'viewed')->textInput() ?>
+         <div class="form-group">
+             <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+         </div>
 
-    <?= $form->field($model, 'user_id')->textInput() ?>
-
-    <?= $form->field($model, 'cate_id')->textInput() ?>
-
-    <?= $form->field($model, 'created_at')->textInput() ?>
-
-    <?= $form->field($model, 'updated_at')->textInput() ?>
-
-    <?= $form->field($model, 'created_by')->textInput() ?>
-
-    <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
-    </div>
-
-    <?php ActiveForm::end(); ?>
+         <?php ActiveForm::end(); ?>
+     </div>
+ </div>
 
 </div>
